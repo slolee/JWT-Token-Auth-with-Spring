@@ -31,10 +31,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         UserContext userContext = decoder.decodeJwt(jwtToken);
 
         Optional<Users> findUser = userRepository.findByUserId(userContext.getUsername());
-        if (findUser.isPresent()) {
+        if (findUser.isPresent())
             return PostLoginAuthorizationToken.getTokenFromUserContext(userContext);
-        }
-        throw new InvalidJwtException(String.format("Invalid JWT Token : [%s]", token));
+        throw new InvalidJwtException(String.format("Invalid JWT Token : [%s]", jwtToken));
     }
 
     @Override
