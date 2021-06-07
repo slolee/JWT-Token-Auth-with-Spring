@@ -19,8 +19,6 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private ModelMapper mapper;
-    @Autowired
     private PasswordEncoder encoder;
 
     @Override

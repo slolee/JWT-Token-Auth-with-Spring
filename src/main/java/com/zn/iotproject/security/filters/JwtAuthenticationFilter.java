@@ -2,6 +2,7 @@ package com.zn.iotproject.security.filters;
 
 import com.zn.iotproject.exception.InvalidJwtException;
 import com.zn.iotproject.security.object.PreJwtProcessingToken;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     private AuthenticationSuccessHandler successHandler;
     private AuthenticationFailureHandler failureHandler;
@@ -34,8 +36,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
         String authorization_header = req.getHeader("Authorization");
         if (StringUtils.isEmpty(authorization_header) || authorization_header.length() < "Bearer ".length())
-            throw new InvalidJwtException(String.format("Invalid Jwt Token : [%s]", authorization_header));
-
+            authorization_header = "Invalid Token";
         PreJwtProcessingToken token = new PreJwtProcessingToken(authorization_header.substring("Bearer ".length()));
         return super.getAuthenticationManager().authenticate(token);
     }
@@ -44,6 +45,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
         this.successHandler.onAuthenticationSuccess(req, res, authResult);
+        chain.doFilter(req, res);
     }
 
     @Override

@@ -3,8 +3,11 @@ package com.zn.iotproject.config;
 import com.zn.iotproject.security.FilterSkipMatcher;
 import com.zn.iotproject.security.filters.JwtAuthenticationFilter;
 import com.zn.iotproject.security.filters.LoginFilter;
+import com.zn.iotproject.security.handler.JwtAuthenticationFailureHandler;
+import com.zn.iotproject.security.handler.JwtAuthenticationSuccessHandler;
 import com.zn.iotproject.security.handler.LoginAuthenticationFailureHandler;
 import com.zn.iotproject.security.handler.LoginAuthenticationSuccessHandler;
+import com.zn.iotproject.security.provider.JwtAuthenticationProvider;
 import com.zn.iotproject.security.provider.LoginAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +29,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private LoginAuthenticationFailureHandler loginAuthenticationFailureHandler;
     @Autowired
+    private JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
+    @Autowired
+    private JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
+    @Autowired
     private LoginAuthenticationProvider loginAuthenticationProvider;
+    @Autowired
+    private JwtAuthenticationProvider jwtAuthenticationProvider;
 
     protected LoginFilter loginFilter() throws Exception {
         LoginFilter filter = new LoginFilter("/api/*/login", loginAuthenticationSuccessHandler, loginAuthenticationFailureHandler);
@@ -36,7 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     protected JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         FilterSkipMatcher matcher = new FilterSkipMatcher(Arrays.asList("POST /api/*/login", "POST /api/*/users", "GET /api/*/users/*"), "/api/*/**");
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(matcher, null, null);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(matcher, jwtAuthenticationSuccessHandler, jwtAuthenticationFailureHandler);
         filter.setAuthenticationManager(super.authenticationManager());
         return filter;
     }
@@ -52,6 +61,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(this.loginAuthenticationProvider);
-
+        auth.authenticationProvider(this.jwtAuthenticationProvider);
     }
 }
