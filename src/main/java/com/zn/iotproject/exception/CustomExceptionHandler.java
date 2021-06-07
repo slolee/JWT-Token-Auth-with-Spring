@@ -1,6 +1,8 @@
 package com.zn.iotproject.exception;
 
 import com.zn.iotproject.dto.ExceptionDto;
+import com.zn.iotproject.security.exception.InvalidJwtException;
+import com.zn.iotproject.security.exception.InvalidUserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +28,5 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleInvalidUsernameNotFoundException(Exception e, WebRequest req) {
         ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getMessage(), req.getDescription(false));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-    @ExceptionHandler(InvalidUserException.class)
-    public final ResponseEntity<Object> handleInvalidUserException(Exception e, WebRequest req) {
-        ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getMessage(), req.getDescription(false));
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-    }
-    @ExceptionHandler(InvalidJwtException.class)
-    public final ResponseEntity<Object> handleInvalidJwtException(Exception e, WebRequest req) {
-        ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getMessage(), req.getDescription(false));
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

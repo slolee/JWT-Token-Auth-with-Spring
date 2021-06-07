@@ -1,6 +1,5 @@
 package com.zn.iotproject.security.handler;
 
-import com.zn.iotproject.exception.InvalidUserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;

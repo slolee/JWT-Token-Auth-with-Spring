@@ -1,4 +1,4 @@
-package com.zn.iotproject.exception;
+package com.zn.iotproject.security.exception;
 
 public class InvalidUserException extends RuntimeException {
     public InvalidUserException(String message) {
