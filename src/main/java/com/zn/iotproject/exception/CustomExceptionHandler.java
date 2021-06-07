@@ -24,14 +24,17 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
     @ExceptionHandler(UsernameNotFoundException.class)
     public final ResponseEntity<Object> handleInvalidUsernameNotFoundException(Exception e, WebRequest req) {
-        log.error("handler here!! 404");
         ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getMessage(), req.getDescription(false));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(InvalidUserException.class)
     public final ResponseEntity<Object> handleInvalidUserException(Exception e, WebRequest req) {
-        log.error("handler here!! 401");
         ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getMessage(), req.getDescription(false));
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(InvalidJwtException.class)
+    public final ResponseEntity<Object> handleInvalidJwtException(Exception e, WebRequest req) {
+        ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getMessage(), req.getDescription(false));
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

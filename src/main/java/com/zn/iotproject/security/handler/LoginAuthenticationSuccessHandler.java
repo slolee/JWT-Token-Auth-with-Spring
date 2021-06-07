@@ -23,15 +23,13 @@ import java.io.IOException;
 public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
     private JwtFactory jwtFactory;
-    @Autowired
-    private ModelMapper mapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse res, Authentication auth)
-            throws IOException, ServletException {
+            throws IOException {
         PostLoginAuthorizationToken token = (PostLoginAuthorizationToken) auth;
         UserContext user = (UserContext) token.getPrincipal();
-        String jwtToken = jwtFactory.generateToken(user);
+        String jwtToken = jwtFactory.generateAccessToken(user);
         TokenDto tokenDto = new TokenDto(jwtToken);
 
         res.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
