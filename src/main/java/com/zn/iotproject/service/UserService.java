@@ -4,5 +4,5 @@ import com.zn.iotproject.dto.UserDto;
 
 public interface UserService {
     UserDto.Response retrieveUser(String userId);
-    UserDto.Response join(UserDto.JoinRequest request);
+
 }

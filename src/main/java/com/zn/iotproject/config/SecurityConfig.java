@@ -3,10 +3,7 @@ package com.zn.iotproject.config;
 import com.zn.iotproject.security.FilterSkipMatcher;
 import com.zn.iotproject.security.filters.JwtAuthenticationFilter;
 import com.zn.iotproject.security.filters.LoginFilter;
-import com.zn.iotproject.security.handler.JwtAuthenticationFailureHandler;
-import com.zn.iotproject.security.handler.JwtAuthenticationSuccessHandler;
-import com.zn.iotproject.security.handler.LoginAuthenticationFailureHandler;
-import com.zn.iotproject.security.handler.LoginAuthenticationSuccessHandler;
+import com.zn.iotproject.security.handler.*;
 import com.zn.iotproject.security.provider.JwtAuthenticationProvider;
 import com.zn.iotproject.security.provider.LoginAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +36,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtAuthenticationProvider jwtAuthenticationProvider;
 
     protected LoginFilter loginFilter() throws Exception {
-        LoginFilter filter = new LoginFilter("/api/*/login", loginAuthenticationSuccessHandler, loginAuthenticationFailureHandler);
+        LoginFilter filter = new LoginFilter("/api/*/auth/signin", loginAuthenticationSuccessHandler, loginAuthenticationFailureHandler);
         filter.setAuthenticationManager(super.authenticationManager());
         return filter;
     }
 
     protected JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        FilterSkipMatcher matcher = new FilterSkipMatcher(Arrays.asList("POST /api/*/login", "POST /api/*/users", "GET /api/*/users/*"), "/api/*/**");
+        FilterSkipMatcher matcher = new FilterSkipMatcher(Arrays.asList("GET /api/*/auth/**", "POST /api/*/auth/**"), "/api/*/**");
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(matcher, jwtAuthenticationSuccessHandler, jwtAuthenticationFailureHandler);
         filter.setAuthenticationManager(super.authenticationManager());
         return filter;

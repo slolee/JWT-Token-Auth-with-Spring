@@ -1,6 +1,6 @@
 package com.zn.iotproject.security.filters;
 
-import com.zn.iotproject.exception.NotFoundTokenException;
+import com.zn.iotproject.security.Utils;
 import com.zn.iotproject.security.object.PreJwtProcessingToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -9,7 +9,6 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -34,12 +33,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
-        String authorization_header = req.getHeader("Authorization");
-        if (StringUtils.isEmpty(authorization_header) || authorization_header.length() < "Bearer ".length())
-            throw new NotFoundTokenException("Not Found Token");
-
-        PreJwtProcessingToken token = new PreJwtProcessingToken(authorization_header.substring("Bearer ".length()));
-        return super.getAuthenticationManager().authenticate(token);
+        return super.getAuthenticationManager().authenticate(new PreJwtProcessingToken(Utils.resolveToken(req.getHeader("Authorization"))));
     }
 
     @Override

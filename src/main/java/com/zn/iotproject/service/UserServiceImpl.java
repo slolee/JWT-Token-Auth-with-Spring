@@ -19,26 +19,11 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private ModelMapper mapper;
-    @Autowired
-    private PasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public UserDto.Response retrieveUser(String userId) {
         Users findUser = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("Not Found User : [%s]", userId)));
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("Not found user : [%s].", userId)));
         return mapper.map(findUser, UserDto.Response.class);
-    }
-
-    @Override
-    public UserDto.Response join(UserDto.JoinRequest request) {
-        if (userRepository.findByUserId(request.getUserId()).isPresent())
-            throw new AlreadyExistUserIdException(String.format("This UserId[%s] is Already Exists.", request.getUserId()));
-
-        Users user = mapper.map(request, Users.class);
-        user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
-        user.setJoinDate(new Date());
-        Users createdUser = userRepository.save(user);
-
-        return mapper.map(createdUser, UserDto.Response.class);
     }
 }

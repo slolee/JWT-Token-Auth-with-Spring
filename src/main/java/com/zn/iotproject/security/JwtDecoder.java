@@ -20,9 +20,13 @@ import java.util.Optional;
 @Slf4j
 public class JwtDecoder {
     public UserContext decodeJwt(String token) {
-        DecodedJWT decodedJWT = isValidToken(token).orElseThrow(() -> new InvalidJwtException(String.format("Invalid JWT Token : [%s]", token)));
+        DecodedJWT decodedJWT = isValidToken(token).orElseThrow(() -> new InvalidJwtException(String.format("Invalid JWT token : [%s].", token)));
         String username = decodedJWT.getClaim("USERNAME").asString();
-        return new UserContext(username, "void", new ArrayList<>());
+        String role = decodedJWT.getClaim("ROLE").asString();
+
+        if (username == null || role == null)
+            throw new InvalidJwtException("Invalid token without claim: (USERNAME, ROLE).");
+        return new UserContext(username, role);
     }
 
     private Optional<DecodedJWT> isValidToken(String token) {
@@ -40,4 +44,5 @@ public class JwtDecoder {
         }
         return Optional.ofNullable(jwt);
     }
+
 }

@@ -29,11 +29,11 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
         String password = token.getPassword();
 
         Users findUser = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new InvalidUserException(String.format("Not Found User : [%s]", userId)));
+                .orElseThrow(() -> new InvalidUserException(String.format("Not found user : [%s].", userId)));
         if (checkPassword(password, findUser)) {
             return PostLoginAuthorizationToken.getTokenFromUserContext(UserContext.getContextFromUser(findUser));
         }
-        throw new InvalidUserException(String.format("Invalid Password of [%s]", userId));
+        throw new InvalidUserException(String.format("Invalid password of [%s].", userId));
     }
 
     @Override
