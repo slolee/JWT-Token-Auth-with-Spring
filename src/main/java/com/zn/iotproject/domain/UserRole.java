@@ -1,5 +1,6 @@
 package com.zn.iotproject.domain;
 
+import com.zn.iotproject.exception.NotFoundRoleException;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -20,6 +21,6 @@ public enum UserRole {
 
     public static UserRole getRoleByName(String roleName) {
         return Arrays.stream(UserRole.values())
-                .filter(r -> r.isCorrectName(roleName)).findFirst().orElseThrow(() -> new NoSuchElementException("존재하지 않는 권한 종류입니다."));
+                .filter(r -> r.isCorrectName(roleName)).findFirst().orElseThrow(() -> new NotFoundRoleException("존재하지 않는 권한 종류입니다."));
     }
 }
