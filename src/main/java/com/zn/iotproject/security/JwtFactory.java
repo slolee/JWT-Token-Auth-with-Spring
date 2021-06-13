@@ -2,7 +2,7 @@ package com.zn.iotproject.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.zn.iotproject.constant.JwtConstant;
+import com.zn.iotproject.constant.AuthConstant;
 import com.zn.iotproject.domain.Users;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class JwtFactory {
             token = JWT.create()
                     .withIssuer("ZN")
                     .withIssuedAt(now)
-                    .withExpiresAt(new Date(now.getTime() + JwtConstant.ACCESS_TOKEN_VALID_TIME))
+                    .withExpiresAt(new Date(now.getTime() + AuthConstant.ACCESS_TOKEN_VALID_TIME))
                     .withClaim("USERNAME", user.getUserId())
                     .withClaim("ROLE", user.getUserRole().getRoleName())
                     .sign(generateAlgorithm());
@@ -31,15 +31,15 @@ public class JwtFactory {
         return token;
     }
 
-    public String generateRefreshToken(UserContext context) {
+    public String generateRefreshToken(String value) {
         String token = null;
         Date now = new Date();
         try {
             token = JWT.create()
                     .withIssuer("ZN")
                     .withIssuedAt(now)
-                    .withExpiresAt(new Date(now.getTime() + JwtConstant.REFRESH_TOKEN_VALID_TIME))
-                    .withClaim("USERNAME", context.getUsername())
+                    .withExpiresAt(new Date(now.getTime() + AuthConstant.REFRESH_TOKEN_VALID_TIME))
+                    .withClaim("KEY", value)
                     .sign(generateAlgorithm());
         }catch (Exception e) {
             log.error(e.getMessage());
@@ -48,6 +48,6 @@ public class JwtFactory {
     }
 
     private Algorithm generateAlgorithm() {
-        return Algorithm.HMAC256(JwtConstant.SIGNING_KEY);
+        return Algorithm.HMAC256(AuthConstant.SIGNING_KEY);
     }
 }

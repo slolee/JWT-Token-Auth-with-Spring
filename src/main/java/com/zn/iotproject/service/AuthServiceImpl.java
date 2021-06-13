@@ -1,12 +1,19 @@
 package com.zn.iotproject.service;
 
+import com.zn.iotproject.constant.AuthConstant;
 import com.zn.iotproject.domain.Users;
 import com.zn.iotproject.dto.AuthDto;
 import com.zn.iotproject.dto.UserDto;
 import com.zn.iotproject.exception.AlreadyExistUserIdException;
+import com.zn.iotproject.exception.ExpiredTokenException;
+import com.zn.iotproject.repository.RefreshTokenRepository;
 import com.zn.iotproject.repository.UserRepository;
+import com.zn.iotproject.security.JwtDecoder;
+import com.zn.iotproject.security.JwtFactory;
+import com.zn.iotproject.security.UserContext;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +28,12 @@ public class AuthServiceImpl implements AuthService {
     private ModelMapper mapper;
     @Autowired
     private PasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+    @Autowired
+    private JwtFactory jwtFactory;
+    @Autowired
+    private JwtDecoder jwtDecoder;
 
     @Override
     public UserDto.Response join(UserDto.JoinRequest request) {
@@ -39,5 +52,19 @@ public class AuthServiceImpl implements AuthService {
     public AuthDto.CheckOverlapResponse checkOverlap(String userId) {
         Optional<Users> findUser = userRepository.findByUserId(userId);
         return new AuthDto.CheckOverlapResponse(findUser.isPresent());
+    }
+
+    @Override
+    public AuthDto.Response refresh(AuthDto.RefreshRequest refreshRequest) {
+        String refreshKey = jwtDecoder.decodeRefreshToken(refreshRequest.getRefreshToken());
+        if (!refreshTokenRepository.existsByRefreshKey(refreshKey))
+            throw new ExpiredTokenException("Not found refresh token.");
+
+        Users user = userRepository.findByUserId(refreshRequest.getUserId()).orElseThrow(() ->
+                new UsernameNotFoundException(String.format("Not found user name : [%s]", refreshRequest.getUserId())));
+
+        UserContext userContext = UserContext.getContextFromUser(user);
+        String accessToken = jwtFactory.generateAccessToken(userContext);
+        return new AuthDto.Response(accessToken, refreshRequest.getRefreshToken(), AuthConstant.AUTH_TYPE);
     }
 }

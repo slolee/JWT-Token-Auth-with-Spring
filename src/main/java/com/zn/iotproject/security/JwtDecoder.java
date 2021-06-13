@@ -6,20 +6,28 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.zn.iotproject.constant.JwtConstant;
+import com.zn.iotproject.constant.AuthConstant;
 import com.zn.iotproject.exception.ExpiredTokenException;
 import com.zn.iotproject.exception.InvalidJwtException;
 import com.zn.iotproject.exception.SignatureMismatchException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 @Component
 @Slf4j
 public class JwtDecoder {
-    public UserContext decodeJwt(String token) {
+    public String decodeRefreshToken(String token) {
+        DecodedJWT decodedJWT = isValidToken(token).orElseThrow(() -> new InvalidJwtException(String.format("Invalid JWT token : [%s].", token)));
+        String key = decodedJWT.getClaim("KEY").asString();
+
+        if (key == null)
+            throw new InvalidJwtException("Invalid token without claim: (KEY).");
+        return key;
+    }
+
+    public UserContext decodeAccessToken(String token) {
         DecodedJWT decodedJWT = isValidToken(token).orElseThrow(() -> new InvalidJwtException(String.format("Invalid JWT token : [%s].", token)));
         String username = decodedJWT.getClaim("USERNAME").asString();
         String role = decodedJWT.getClaim("ROLE").asString();
@@ -32,7 +40,7 @@ public class JwtDecoder {
     private Optional<DecodedJWT> isValidToken(String token) {
         DecodedJWT jwt;
         try {
-            Algorithm algorithm = Algorithm.HMAC256(JwtConstant.SIGNING_KEY);
+            Algorithm algorithm = Algorithm.HMAC256(AuthConstant.SIGNING_KEY);
             JWTVerifier verifier = JWT.require(algorithm).build();
             jwt = verifier.verify(token);
         }catch (TokenExpiredException e) {

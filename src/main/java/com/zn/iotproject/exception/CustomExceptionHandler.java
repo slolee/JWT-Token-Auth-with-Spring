@@ -37,4 +37,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getClass().getSimpleName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(ExpiredTokenException.class)
+    public final ResponseEntity<Object> handleExpiredTokenException(Exception e, WebRequest req) {
+        ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getClass().getSimpleName(), e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }

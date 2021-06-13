@@ -15,13 +15,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class JwtAuthenticationProvider implements AuthenticationProvider {
     @Autowired
-    private JwtDecoder decoder;
+    private JwtDecoder jwtDecoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         PreJwtProcessingToken token = (PreJwtProcessingToken) authentication;
         String jwtToken = (String) token.getPrincipal();
-        UserContext userContext = decoder.decodeJwt(jwtToken);
+        UserContext userContext = jwtDecoder.decodeAccessToken(jwtToken);
         return PostLoginAuthorizationToken.getTokenFromUserContext(userContext);
     }
 

@@ -26,8 +26,9 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("/refresh")
+    @PostMapping("/refresh_token")
     public ResponseEntity<AuthDto.Response> refreshToken(@RequestBody AuthDto.RefreshRequest refreshRequest) {
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
+        AuthDto.Response response = authService.refresh(refreshRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
