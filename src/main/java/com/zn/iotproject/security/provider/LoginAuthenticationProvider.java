@@ -1,6 +1,7 @@
 package com.zn.iotproject.security.provider;
 
 import com.zn.iotproject.domain.Users;
+import com.zn.iotproject.exception.InvalidUserException;
 import com.zn.iotproject.repository.UserRepository;
 import com.zn.iotproject.security.UserContext;
 import com.zn.iotproject.security.object.PostLoginAuthorizationToken;
@@ -28,11 +29,11 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
         String password = token.getPassword();
 
         Users findUser = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("Not Found User : [%s]", userId)));
+                .orElseThrow(() -> new InvalidUserException(String.format("Not Found User : [%s]", userId)));
         if (checkPassword(password, findUser)) {
             return PostLoginAuthorizationToken.getTokenFromUserContext(UserContext.getContextFromUser(findUser));
         }
-        throw new UsernameNotFoundException(String.format("Not Found User : [%s]", userId));
+        throw new InvalidUserException(String.format("Invalid Password of [%s]", userId));
     }
 
     @Override

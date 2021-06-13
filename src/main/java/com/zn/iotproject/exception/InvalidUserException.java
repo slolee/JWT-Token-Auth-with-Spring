@@ -1,6 +1,8 @@
 package com.zn.iotproject.exception;
 
-public class InvalidUserException extends RuntimeException {
+import org.springframework.security.core.AuthenticationException;
+
+public class InvalidUserException extends AuthenticationException {
     public InvalidUserException(String message) {
         super(message);
     }

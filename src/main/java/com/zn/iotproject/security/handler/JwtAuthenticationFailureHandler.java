@@ -29,7 +29,6 @@ public class JwtAuthenticationFailureHandler implements AuthenticationFailureHan
 
         ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getClass().getSimpleName(), e.getMessage());
         res.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-        res.setStatus(HttpStatus.OK.value());
         res.getWriter().write(new ObjectMapper().writeValueAsString(response));
         res.setStatus(HttpStatus.UNAUTHORIZED.value());
     }
