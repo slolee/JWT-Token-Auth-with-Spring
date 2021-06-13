@@ -3,8 +3,12 @@ package com.zn.iotproject.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.zn.iotproject.security.exception.InvalidJwtException;
+import com.zn.iotproject.exception.ExpiredTokenException;
+import com.zn.iotproject.exception.InvalidJwtException;
+import com.zn.iotproject.exception.SignatureMismatchException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +32,11 @@ public class JwtDecoder {
             Algorithm algorithm = Algorithm.HMAC256(SIGNING_KEY);
             JWTVerifier verifier = JWT.require(algorithm).build();
             jwt = verifier.verify(token);
-        }catch(Exception e) {
+        }catch (TokenExpiredException e) {
+            throw new ExpiredTokenException(e.getMessage());
+        }catch (SignatureVerificationException e) {
+            throw new SignatureMismatchException(e.getMessage());
+        }catch (Exception e) {
             throw new InvalidJwtException(e.getMessage());
         }
         return Optional.ofNullable(jwt);

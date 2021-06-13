@@ -1,8 +1,14 @@
 package com.zn.iotproject.security.handler;
 
-import com.zn.iotproject.security.exception.InvalidJwtException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zn.iotproject.dto.ExceptionDto;
+import com.zn.iotproject.exception.ExpiredTokenException;
+import com.zn.iotproject.exception.InvalidJwtException;
+import com.zn.iotproject.exception.NotFoundTokenException;
+import com.zn.iotproject.exception.SignatureMismatchException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -12,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 @Component
 @Slf4j
@@ -19,10 +26,11 @@ public class JwtAuthenticationFailureHandler implements AuthenticationFailureHan
     @Override
     public void onAuthenticationFailure(HttpServletRequest req, HttpServletResponse res, AuthenticationException e) throws IOException, ServletException {
         SecurityContextHolder.clearContext();
-        if (e instanceof InvalidJwtException) {
-            log.error(e.getClass().getName());
-            log.error(e.getMessage());
-        }
+
+        ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getClass().getSimpleName(), e.getMessage());
+        res.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        res.setStatus(HttpStatus.OK.value());
+        res.getWriter().write(new ObjectMapper().writeValueAsString(response));
         res.setStatus(HttpStatus.UNAUTHORIZED.value());
     }
 }
