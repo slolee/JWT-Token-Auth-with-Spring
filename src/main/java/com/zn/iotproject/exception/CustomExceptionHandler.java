@@ -27,4 +27,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getClass().getSimpleName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(AlreadyExistUserIdException.class)
+    public final ResponseEntity<Object> handleAlreadyExistUserIdException(Exception e, WebRequest req) {
+        ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getClass().getSimpleName(), e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }

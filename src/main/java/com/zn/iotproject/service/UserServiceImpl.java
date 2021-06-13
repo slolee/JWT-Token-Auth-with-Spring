@@ -2,6 +2,7 @@ package com.zn.iotproject.service;
 
 import com.zn.iotproject.domain.Users;
 import com.zn.iotproject.dto.UserDto;
+import com.zn.iotproject.exception.AlreadyExistUserIdException;
 import com.zn.iotproject.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto.Response join(UserDto.JoinRequest request) {
+        if (userRepository.findByUserId(request.getUserId()).isPresent())
+            throw new AlreadyExistUserIdException(String.format("This UserId[%s] is Already Exists.", request.getUserId()));
+
         Users user = mapper.map(request, Users.class);
         user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
         user.setJoinDate(new Date());
