@@ -1,5 +1,8 @@
 package com.zn.iotproject.security.provider;
 
+import com.zn.iotproject.exception.DiscardedAccessTokenException;
+import com.zn.iotproject.exception.ExpiredTokenException;
+import com.zn.iotproject.repository.TokenBlackListRepository;
 import com.zn.iotproject.security.JwtDecoder;
 import com.zn.iotproject.security.UserContext;
 import com.zn.iotproject.security.object.PostLoginAuthorizationToken;
@@ -16,12 +19,18 @@ import org.springframework.stereotype.Component;
 public class JwtAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private JwtDecoder jwtDecoder;
+    @Autowired
+    private TokenBlackListRepository tokenBlackListRepository;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         PreJwtProcessingToken token = (PreJwtProcessingToken) authentication;
-        String jwtToken = (String) token.getPrincipal();
-        UserContext userContext = jwtDecoder.decodeAccessToken(jwtToken);
+        String accessToken = (String) token.getPrincipal();
+
+        if (tokenBlackListRepository.existsByToken(accessToken))
+            throw new DiscardedAccessTokenException(String.format("This access token is discarded : [%s]", accessToken));
+
+        UserContext userContext = jwtDecoder.decodeAccessToken(accessToken);
         return PostLoginAuthorizationToken.getTokenFromUserContext(userContext);
     }
 

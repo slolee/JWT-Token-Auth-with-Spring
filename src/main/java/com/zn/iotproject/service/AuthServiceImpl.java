@@ -1,13 +1,16 @@
 package com.zn.iotproject.service;
 
 import com.zn.iotproject.constant.AuthConstant;
+import com.zn.iotproject.domain.TokenBlackList;
 import com.zn.iotproject.domain.Users;
 import com.zn.iotproject.dto.AuthDto;
 import com.zn.iotproject.dto.UserDto;
 import com.zn.iotproject.exception.AlreadyExistUserIdException;
+import com.zn.iotproject.exception.DiscardedRefreshTokenException;
 import com.zn.iotproject.exception.ExpiredTokenException;
 import com.zn.iotproject.exception.InvalidUserException;
 import com.zn.iotproject.repository.RefreshTokenRepository;
+import com.zn.iotproject.repository.TokenBlackListRepository;
 import com.zn.iotproject.repository.UserRepository;
 import com.zn.iotproject.security.JwtDecoder;
 import com.zn.iotproject.security.JwtFactory;
@@ -32,6 +35,8 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
     @Autowired
+    private TokenBlackListRepository tokenBlackListRepository;
+    @Autowired
     private JwtFactory jwtFactory;
     @Autowired
     private JwtDecoder jwtDecoder;
@@ -40,7 +45,6 @@ public class AuthServiceImpl implements AuthService {
     public UserDto.Response join(UserDto.JoinRequest request) {
         if (userRepository.existsByUserId(request.getUserId()))
             throw new AlreadyExistUserIdException(String.format("This UserId[%s] is already exists.", request.getUserId()));
-
         Users user = mapper.map(request, Users.class);
         user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
         user.setJoinDate(new Date());
@@ -58,6 +62,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthDto.Response refresh(AuthDto.RefreshRequest refreshRequest) {
         String refreshKey = jwtDecoder.decodeRefreshToken(refreshRequest);
+        if (tokenBlackListRepository.existsByToken(refreshKey))
+            throw new DiscardedRefreshTokenException(String.format("This refresh token is discarded : [%s]", refreshKey));
         if (!refreshTokenRepository.existsByUserIdAndRefreshKey(refreshRequest.getUserId(), refreshKey))
             throw new ExpiredTokenException(String.format("Not found refresh token : [%s]", refreshRequest.getRefreshToken()));
 
@@ -66,6 +72,7 @@ public class AuthServiceImpl implements AuthService {
         UserContext userContext = UserContext.getContextFromUser(user);
         String accessToken = jwtFactory.generateAccessToken(userContext);
 
+        tokenBlackListRepository.save(new TokenBlackList(refreshRequest.getAccessToken()));
         return new AuthDto.Response(accessToken, refreshRequest.getRefreshToken(), AuthConstant.AUTH_TYPE);
     }
 }

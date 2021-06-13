@@ -8,6 +8,7 @@ public class AuthDto {
     @Data
     public static class RefreshRequest {
         private String userId;
+        private String accessToken;
         private String refreshToken;
     }
 

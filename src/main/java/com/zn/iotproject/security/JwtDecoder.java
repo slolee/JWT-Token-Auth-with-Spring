@@ -7,11 +7,14 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.zn.iotproject.constant.AuthConstant;
+import com.zn.iotproject.domain.TokenBlackList;
 import com.zn.iotproject.dto.AuthDto;
 import com.zn.iotproject.exception.ExpiredTokenException;
 import com.zn.iotproject.exception.InvalidJwtException;
 import com.zn.iotproject.exception.SignatureMismatchException;
+import com.zn.iotproject.repository.TokenBlackListRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -22,11 +25,11 @@ public class JwtDecoder {
     public String decodeRefreshToken(AuthDto.RefreshRequest refreshRequest) {
         DecodedJWT decodedJWT = isValidToken(refreshRequest.getRefreshToken()).orElseThrow(() ->
                 new InvalidJwtException(String.format("Invalid JWT token : [%s].", refreshRequest.getRefreshToken())));
-        String key = decodedJWT.getClaim(refreshRequest.getUserId()).asString();
+        String refreshKey = decodedJWT.getClaim(refreshRequest.getUserId()).asString();
 
-        if (key == null)
+        if (refreshKey == null)
             throw new InvalidJwtException("Invalid username and refresh token.");
-        return key;
+        return refreshKey;
     }
 
     public UserContext decodeAccessToken(String token) {
@@ -54,5 +57,4 @@ public class JwtDecoder {
         }
         return Optional.ofNullable(jwt);
     }
-
 }

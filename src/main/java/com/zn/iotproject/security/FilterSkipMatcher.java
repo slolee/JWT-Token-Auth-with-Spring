@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class FilterSkipMatcher implements RequestMatcher {
-    private OrRequestMatcher orRequestMatcher;
-    private RequestMatcher processingMatcher;
+    private final OrRequestMatcher orRequestMatcher;
+    private final RequestMatcher processingMatcher;
 
     public FilterSkipMatcher(List<String> pathToSkip, String processingPath) {
         this.orRequestMatcher = new OrRequestMatcher(pathToSkip.stream().map((p) -> {
