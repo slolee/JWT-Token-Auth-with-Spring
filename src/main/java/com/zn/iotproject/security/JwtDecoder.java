@@ -19,14 +19,14 @@ import java.util.Optional;
 @Component
 @Slf4j
 public class JwtDecoder {
-    public AuthDto.RefreshKey decodeRefreshToken(String token) {
-        DecodedJWT decodedJWT = isValidToken(token).orElseThrow(() -> new InvalidJwtException(String.format("Invalid JWT token : [%s].", token)));
-        String username = decodedJWT.getClaim("USERNAME").asString();
-        String key = decodedJWT.getClaim("KEY").asString();
+    public String decodeRefreshToken(AuthDto.RefreshRequest refreshRequest) {
+        DecodedJWT decodedJWT = isValidToken(refreshRequest.getRefreshToken()).orElseThrow(() ->
+                new InvalidJwtException(String.format("Invalid JWT token : [%s].", refreshRequest.getRefreshToken())));
+        String key = decodedJWT.getClaim(refreshRequest.getUserId()).asString();
 
-        if (username == null || key == null)
-            throw new InvalidJwtException("Invalid token without claim: (USERNAME, KEY).");
-        return new AuthDto.RefreshKey(username, key);
+        if (key == null)
+            throw new InvalidJwtException("Invalid username and refresh token.");
+        return key;
     }
 
     public UserContext decodeAccessToken(String token) {

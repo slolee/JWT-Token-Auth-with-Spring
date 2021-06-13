@@ -41,8 +41,7 @@ public class JwtFactory {
                     .withIssuer("ZN")
                     .withIssuedAt(now)
                     .withExpiresAt(new Date(now.getTime() + AuthConstant.REFRESH_TOKEN_VALID_TIME))
-                    .withClaim("USERNAME", user.getUserId())
-                    .withClaim("KEY", value)
+                    .withClaim(user.getUserId(), value)
                     .sign(generateAlgorithm());
         }catch (Exception e) {
             log.error(e.getMessage());

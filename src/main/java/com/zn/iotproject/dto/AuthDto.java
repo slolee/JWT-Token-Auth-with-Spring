@@ -13,13 +13,6 @@ public class AuthDto {
 
     @Data
     @AllArgsConstructor
-    public static class RefreshKey {
-        private String userId;
-        private String refreshKey;
-    }
-
-    @Data
-    @AllArgsConstructor
     public static class Response {
         private String accessToken;
         private String refreshToken;

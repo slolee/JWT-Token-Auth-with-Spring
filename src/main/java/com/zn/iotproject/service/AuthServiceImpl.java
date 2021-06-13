@@ -57,11 +57,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthDto.Response refresh(AuthDto.RefreshRequest refreshRequest) {
-        AuthDto.RefreshKey refreshKey = jwtDecoder.decodeRefreshToken(refreshRequest.getRefreshToken());
-        if (!refreshTokenRepository.existsByUserIdAndRefreshKey(refreshKey.getUserId(), refreshKey.getRefreshKey()))
+        String refreshKey = jwtDecoder.decodeRefreshToken(refreshRequest);
+        if (!refreshTokenRepository.existsByUserIdAndRefreshKey(refreshRequest.getUserId(), refreshKey))
             throw new ExpiredTokenException(String.format("Not found refresh token : [%s]", refreshRequest.getRefreshToken()));
-        if (!refreshKey.getUserId().equals(refreshRequest.getUserId()))
-            throw new InvalidUserException(String.format("Invalid user : [%s]", refreshRequest.getUserId()));
 
         Users user = userRepository.findByUserId(refreshRequest.getUserId()).orElseThrow(() ->
                 new UsernameNotFoundException(String.format("Not found user name : [%s]", refreshRequest.getUserId())));
