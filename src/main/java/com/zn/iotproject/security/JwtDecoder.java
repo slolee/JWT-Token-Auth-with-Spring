@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.zn.iotproject.constant.AuthConstant;
+import com.zn.iotproject.dto.AuthDto;
 import com.zn.iotproject.exception.ExpiredTokenException;
 import com.zn.iotproject.exception.InvalidJwtException;
 import com.zn.iotproject.exception.SignatureMismatchException;
@@ -18,13 +19,14 @@ import java.util.Optional;
 @Component
 @Slf4j
 public class JwtDecoder {
-    public String decodeRefreshToken(String token) {
+    public AuthDto.RefreshKey decodeRefreshToken(String token) {
         DecodedJWT decodedJWT = isValidToken(token).orElseThrow(() -> new InvalidJwtException(String.format("Invalid JWT token : [%s].", token)));
+        String username = decodedJWT.getClaim("USERNAME").asString();
         String key = decodedJWT.getClaim("KEY").asString();
 
-        if (key == null)
-            throw new InvalidJwtException("Invalid token without claim: (KEY).");
-        return key;
+        if (username == null || key == null)
+            throw new InvalidJwtException("Invalid token without claim: (USERNAME, KEY).");
+        return new AuthDto.RefreshKey(username, key);
     }
 
     public UserContext decodeAccessToken(String token) {

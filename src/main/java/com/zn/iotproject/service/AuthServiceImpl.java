@@ -6,6 +6,7 @@ import com.zn.iotproject.dto.AuthDto;
 import com.zn.iotproject.dto.UserDto;
 import com.zn.iotproject.exception.AlreadyExistUserIdException;
 import com.zn.iotproject.exception.ExpiredTokenException;
+import com.zn.iotproject.exception.InvalidUserException;
 import com.zn.iotproject.repository.RefreshTokenRepository;
 import com.zn.iotproject.repository.UserRepository;
 import com.zn.iotproject.security.JwtDecoder;
@@ -56,15 +57,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthDto.Response refresh(AuthDto.RefreshRequest refreshRequest) {
-        String refreshKey = jwtDecoder.decodeRefreshToken(refreshRequest.getRefreshToken());
-        if (!refreshTokenRepository.existsByRefreshKey(refreshKey))
-            throw new ExpiredTokenException("Not found refresh token.");
+        AuthDto.RefreshKey refreshKey = jwtDecoder.decodeRefreshToken(refreshRequest.getRefreshToken());
+        if (!refreshTokenRepository.existsByUserIdAndRefreshKey(refreshKey.getUserId(), refreshKey.getRefreshKey()))
+            throw new ExpiredTokenException(String.format("Not found refresh token : [%s]", refreshRequest.getRefreshToken()));
+        if (!refreshKey.getUserId().equals(refreshRequest.getUserId()))
+            throw new InvalidUserException(String.format("Invalid user : [%s]", refreshRequest.getUserId()));
 
         Users user = userRepository.findByUserId(refreshRequest.getUserId()).orElseThrow(() ->
                 new UsernameNotFoundException(String.format("Not found user name : [%s]", refreshRequest.getUserId())));
-
         UserContext userContext = UserContext.getContextFromUser(user);
         String accessToken = jwtFactory.generateAccessToken(userContext);
+
         return new AuthDto.Response(accessToken, refreshRequest.getRefreshToken(), AuthConstant.AUTH_TYPE);
     }
 }

@@ -16,10 +16,14 @@ public class RefreshToken {
     private Long id;
 
     @NotNull
+    private String userId;
+
+    @NotNull
     @Column(unique = true)
     private String refreshKey;
 
-    public RefreshToken(String refreshKey) {
+    public RefreshToken(String userId, String refreshKey) {
+        this.userId = userId;
         this.refreshKey = refreshKey;
     }
 }

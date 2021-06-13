@@ -31,12 +31,12 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse res, Authentication auth)
             throws IOException {
         PostLoginAuthorizationToken token = (PostLoginAuthorizationToken) auth;
-        UserContext user = (UserContext) token.getPrincipal();
+        UserContext userContext = (UserContext) token.getPrincipal();
 
-        String accessToken = jwtFactory.generateAccessToken(user);
+        String accessToken = jwtFactory.generateAccessToken(userContext);
         String refreshKey = UUID.randomUUID().toString();
-        String refreshToken = jwtFactory.generateRefreshToken(refreshKey);
-        refreshTokenRepository.save(new RefreshToken(refreshKey));
+        String refreshToken = jwtFactory.generateRefreshToken(userContext, refreshKey);
+        refreshTokenRepository.save(new RefreshToken(userContext.getUsername(), refreshKey));
 
         AuthDto.Response tokenDto = new AuthDto.Response(accessToken, refreshToken, AuthConstant.AUTH_TYPE);
 

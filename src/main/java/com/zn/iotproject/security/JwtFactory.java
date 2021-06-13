@@ -31,14 +31,17 @@ public class JwtFactory {
         return token;
     }
 
-    public String generateRefreshToken(String value) {
+    public String generateRefreshToken(UserContext context, String value) {
         String token = null;
         Date now = new Date();
+        Users user = context.getUser();
+
         try {
             token = JWT.create()
                     .withIssuer("ZN")
                     .withIssuedAt(now)
                     .withExpiresAt(new Date(now.getTime() + AuthConstant.REFRESH_TOKEN_VALID_TIME))
+                    .withClaim("USERNAME", user.getUserId())
                     .withClaim("KEY", value)
                     .sign(generateAlgorithm());
         }catch (Exception e) {
