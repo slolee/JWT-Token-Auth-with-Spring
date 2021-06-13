@@ -27,6 +27,22 @@ public class JwtFactory {
         return token;
     }
 
+    public String generateRefreshToken(UserContext context) {
+        String token = null;
+        Date now = new Date();
+        try {
+            token = JWT.create()
+                    .withIssuer("ZN")
+                    .withIssuedAt(now)
+                    .withExpiresAt(new Date(now.getTime() + JwtConstant.REFRESH_TOKEN_VALID_TIME))
+                    .withClaim("USERNAME", context.getUsername())
+                    .sign(generateAlgorithm());
+        }catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return token;
+    }
+
     private Algorithm generateAlgorithm() {
         return Algorithm.HMAC256(JwtConstant.SIGNING_KEY);
     }

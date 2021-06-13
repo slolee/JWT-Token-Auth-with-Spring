@@ -1,5 +1,6 @@
 package com.zn.iotproject.dto;
 
+import com.zn.iotproject.domain.UserRole;
 import lombok.Data;
 
 public class UserDto {
@@ -20,5 +21,6 @@ public class UserDto {
     public static class Response {
         private String userId;
         private String email;
+        private UserRole userRole;
     }
 }

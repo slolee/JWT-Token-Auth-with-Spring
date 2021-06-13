@@ -29,5 +29,8 @@ public class Users {
     private String password;
 
     @NotNull
+    private UserRole userRole = UserRole.USER;
+
+    @NotNull
     private Date joinDate;
 }
