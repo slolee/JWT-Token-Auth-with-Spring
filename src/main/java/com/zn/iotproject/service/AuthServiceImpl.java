@@ -8,13 +8,14 @@ import com.zn.iotproject.dto.UserDto;
 import com.zn.iotproject.exception.AlreadyExistUserIdException;
 import com.zn.iotproject.exception.DiscardedRefreshTokenException;
 import com.zn.iotproject.exception.ExpiredTokenException;
-import com.zn.iotproject.exception.InvalidUserException;
 import com.zn.iotproject.repository.RefreshTokenRepository;
 import com.zn.iotproject.repository.TokenBlackListRepository;
 import com.zn.iotproject.repository.UserRepository;
 import com.zn.iotproject.security.JwtDecoder;
 import com.zn.iotproject.security.JwtFactory;
 import com.zn.iotproject.security.UserContext;
+import com.zn.iotproject.security.Utils;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +26,7 @@ import java.util.Date;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserRepository userRepository;
@@ -42,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     private JwtDecoder jwtDecoder;
 
     @Override
-    public UserDto.Response join(UserDto.JoinRequest request) {
+    public UserDto.Response signup(UserDto.SignupRequest request) {
         if (userRepository.existsByUserId(request.getUserId()))
             throw new AlreadyExistUserIdException(String.format("This UserId[%s] is already exists.", request.getUserId()));
         Users user = mapper.map(request, Users.class);
@@ -60,10 +62,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthDto.Response refresh(AuthDto.RefreshRequest refreshRequest) {
+    public AuthDto.Response refresh(AuthDto.Request refreshRequest) {
         String refreshKey = jwtDecoder.decodeRefreshToken(refreshRequest);
-        if (tokenBlackListRepository.existsByToken(refreshKey))
-            throw new DiscardedRefreshTokenException(String.format("This refresh token is discarded : [%s]", refreshKey));
+        if (tokenBlackListRepository.existsByToken(refreshRequest.getRefreshToken()))
+            throw new DiscardedRefreshTokenException(String.format("This refresh token is discarded : [%s]", refreshRequest.getRefreshToken()));
         if (!refreshTokenRepository.existsByUserIdAndRefreshKey(refreshRequest.getUserId(), refreshKey))
             throw new ExpiredTokenException(String.format("Not found refresh token : [%s]", refreshRequest.getRefreshToken()));
 
@@ -74,5 +76,11 @@ public class AuthServiceImpl implements AuthService {
 
         tokenBlackListRepository.save(new TokenBlackList(refreshRequest.getAccessToken()));
         return new AuthDto.Response(accessToken, refreshRequest.getRefreshToken(), AuthConstant.AUTH_TYPE);
+    }
+
+    @Override
+    public void discardToken(String token) {
+        if (!Utils.isExpired(token) && !tokenBlackListRepository.existsByToken(token))
+            tokenBlackListRepository.save(new TokenBlackList(token));
     }
 }

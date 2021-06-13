@@ -1,7 +1,6 @@
 package com.zn.iotproject.security.provider;
 
 import com.zn.iotproject.exception.DiscardedAccessTokenException;
-import com.zn.iotproject.exception.ExpiredTokenException;
 import com.zn.iotproject.repository.TokenBlackListRepository;
 import com.zn.iotproject.security.JwtDecoder;
 import com.zn.iotproject.security.UserContext;

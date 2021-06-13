@@ -1,12 +1,11 @@
 package com.zn.iotproject.dto;
 
-import com.zn.iotproject.domain.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 public class AuthDto {
     @Data
-    public static class RefreshRequest {
+    public static class Request {
         private String userId;
         private String accessToken;
         private String refreshToken;

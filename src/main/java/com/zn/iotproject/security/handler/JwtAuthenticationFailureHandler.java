@@ -2,10 +2,6 @@ package com.zn.iotproject.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zn.iotproject.dto.ExceptionDto;
-import com.zn.iotproject.exception.ExpiredTokenException;
-import com.zn.iotproject.exception.InvalidJwtException;
-import com.zn.iotproject.exception.NotFoundTokenException;
-import com.zn.iotproject.exception.SignatureMismatchException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

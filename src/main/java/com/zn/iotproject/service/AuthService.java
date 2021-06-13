@@ -4,7 +4,8 @@ import com.zn.iotproject.dto.AuthDto;
 import com.zn.iotproject.dto.UserDto;
 
 public interface AuthService {
-    UserDto.Response join(UserDto.JoinRequest request);
+    UserDto.Response signup(UserDto.SignupRequest request);
     AuthDto.CheckOverlapResponse checkOverlap(String userId);
-    AuthDto.Response refresh(AuthDto.RefreshRequest refreshRequest);
+    AuthDto.Response refresh(AuthDto.Request refreshRequest);
+    void discardToken(String token);
 }

@@ -36,13 +36,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtAuthenticationProvider jwtAuthenticationProvider;
 
     protected LoginFilter loginFilter() throws Exception {
-        LoginFilter filter = new LoginFilter("/api/*/auth/signin", loginAuthenticationSuccessHandler, loginAuthenticationFailureHandler);
+        LoginFilter filter = new LoginFilter("/api/*/auth/login", loginAuthenticationSuccessHandler, loginAuthenticationFailureHandler);
         filter.setAuthenticationManager(super.authenticationManager());
         return filter;
     }
 
     protected JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        FilterSkipMatcher matcher = new FilterSkipMatcher(Arrays.asList("GET /api/*/auth/**", "POST /api/*/auth/**"), "/api/*/**");
+        FilterSkipMatcher matcher = new FilterSkipMatcher(Arrays.asList("GET /api/*/auth/**", "POST /api/*/auth/**", "DELETE /api/*/auth/**", "PUT /api/*/auth/**"), "/api/*/**");
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(matcher, jwtAuthenticationSuccessHandler, jwtAuthenticationFailureHandler);
         filter.setAuthenticationManager(super.authenticationManager());
         return filter;

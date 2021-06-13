@@ -4,7 +4,6 @@ import com.zn.iotproject.exception.NotFoundRoleException;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 
 @Getter
 public enum UserRole {

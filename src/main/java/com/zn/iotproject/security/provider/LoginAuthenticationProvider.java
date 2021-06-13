@@ -6,12 +6,10 @@ import com.zn.iotproject.repository.UserRepository;
 import com.zn.iotproject.security.UserContext;
 import com.zn.iotproject.security.object.PostLoginAuthorizationToken;
 import com.zn.iotproject.security.object.PreLoginAuthorizationToken;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 

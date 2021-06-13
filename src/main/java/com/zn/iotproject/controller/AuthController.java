@@ -21,14 +21,21 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDto.Response> join(@RequestBody UserDto.JoinRequest joinRequest) {
-        UserDto.Response response = authService.join(joinRequest);
+    public ResponseEntity<UserDto.Response> signup(@RequestBody UserDto.SignupRequest joinRequest) {
+        UserDto.Response response = authService.signup(joinRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("/refresh_token")
-    public ResponseEntity<AuthDto.Response> refreshToken(@RequestBody AuthDto.RefreshRequest refreshRequest) {
-        AuthDto.Response response = authService.refresh(refreshRequest);
+    @PutMapping("/access_token")
+    public ResponseEntity<AuthDto.Response> refreshToken(@RequestBody AuthDto.Request requestBody) {
+        AuthDto.Response response = authService.refresh(requestBody);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody AuthDto.Request requestBody) {
+        authService.discardToken(requestBody.getAccessToken());
+        authService.discardToken(requestBody.getRefreshToken());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

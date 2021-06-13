@@ -5,7 +5,7 @@ import lombok.Data;
 
 public class UserDto {
     @Data
-    public static class JoinRequest {
+    public static class SignupRequest {
         private String userId;
         private String email;
         private String password;
