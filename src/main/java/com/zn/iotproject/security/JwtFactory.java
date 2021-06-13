@@ -2,6 +2,7 @@ package com.zn.iotproject.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.zn.iotproject.constant.JwtConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -10,9 +11,6 @@ import java.util.Date;
 @Component
 @Slf4j
 public class JwtFactory {
-    private static final String SIGNING_KEY = "1q2w3e4r";
-    private static final long ACCESS_TOKEN_VALID_TIME = 3600000;
-
     public String generateAccessToken(UserContext context) {
         String token = null;
         Date now = new Date();
@@ -20,7 +18,7 @@ public class JwtFactory {
             token = JWT.create()
                     .withIssuer("ZN")
                     .withIssuedAt(now)
-                    .withExpiresAt(new Date(now.getTime() + ACCESS_TOKEN_VALID_TIME))
+                    .withExpiresAt(new Date(now.getTime() + JwtConstant.ACCESS_TOKEN_VALID_TIME))
                     .withClaim("USERNAME", context.getUsername())
                     .sign(generateAlgorithm());
         }catch (Exception e) {
@@ -30,6 +28,6 @@ public class JwtFactory {
     }
 
     private Algorithm generateAlgorithm() {
-        return Algorithm.HMAC256(SIGNING_KEY);
+        return Algorithm.HMAC256(JwtConstant.SIGNING_KEY);
     }
 }

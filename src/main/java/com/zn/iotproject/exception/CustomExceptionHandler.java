@@ -19,12 +19,12 @@ import java.util.Date;
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception e, WebRequest req) {
-        ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getMessage(), req.getDescription(false));
+        ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getClass().getSimpleName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(UsernameNotFoundException.class)
     public final ResponseEntity<Object> handleInvalidUsernameNotFoundException(Exception e, WebRequest req) {
-        ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getMessage(), req.getDescription(false));
+        ExceptionDto.Response response = new ExceptionDto.Response(new Date(), e.getClass().getSimpleName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }
