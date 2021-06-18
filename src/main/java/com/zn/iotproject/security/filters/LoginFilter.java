@@ -33,8 +33,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
             throws AuthenticationException, IOException {
         UserDto.LoginRequest loginRequest = new ObjectMapper().readValue(req.getReader(), UserDto.LoginRequest.class);
-        PreLoginAuthorizationToken token = new PreLoginAuthorizationToken(loginRequest);
-        return super.getAuthenticationManager().authenticate(token);
+        return super.getAuthenticationManager().authenticate(new PreLoginAuthorizationToken(loginRequest));
     }
 
     @Override

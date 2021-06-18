@@ -7,9 +7,9 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:mysql://ch4njun-database-2.ckjufvaxbvyp.ap-northeast-2.rds.amazonaws.com/iot
-    username: ch4njun
-    password: cks14579!
+    url: jdbc:mysql://127.0.0.1/iot?createDatabaseIfNotExist=true
+    username: root
+    password: 1544
     driver-class-name: com.mysql.jdbc.Driver
 
   jpa:

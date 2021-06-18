@@ -29,15 +29,12 @@ public class UserContext extends User {
     public static UserContext getContextFromUser(Users user) {
         return new UserContext(user, user.getUserId(), user.getPassword(), new ArrayList<>());
     }
-
     public static List<SimpleGrantedAuthority> parseAuthorities(UserRole role) {
         return Arrays.asList(role).stream().map(r -> new SimpleGrantedAuthority((r.getRoleName()))).collect(Collectors.toList());
     }
-
     public static List<SimpleGrantedAuthority> parseAuthorities(String role) {
         return parseAuthorities(UserRole.getRoleByName(role));
     }
-
     public Users getUser() {
         return this.user;
     }
